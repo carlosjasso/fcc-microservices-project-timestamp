@@ -24,9 +24,21 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+app.get("/api", (_, res) => {
+  const date = new Date();
+  res.json({unix: date.getTime(), utc: date.toUTCString()})
+})
+
+app.get("/api/:timestamp", (req, res) => {
+  const timestamp = req.params.timestamp;
+  const isUnix = new RegExp(/^\d+$/).test(timestamp);
+  const date = isUnix ? new Date(parseInt(timestamp)) : new Date(Date.parse(timestamp));
+  const result = isNaN(date) ? {error : "Invalid Date"} : {unix: date.getTime(), utc: date.toUTCString()}
+  res.json(result);
+});
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
